@@ -1,6 +1,6 @@
 
 /*
- * *** YOUR NAME GOES HERE / YOUR SECTION NUMBER ***
+ * *** Rodrigo Rejas / Section 002 ***
  *
  * This java file is a Java object implementing simple AVL Tree.
  * You are to complete the deleteElement method.
@@ -25,7 +25,7 @@ import java.lang.Math;
  *  Additional candidate values that can be considered (but currently not 
  *  implemented):
  *    - size: # of nodes in a node's subtrees
- *    - bf  : the nodes's balance factor, e.g., {-1, 0, 1}
+ *    - bf  : the node's balance factor, e.g., {-1, 0, 1}
  *
  */
 
@@ -113,7 +113,7 @@ class LUC_AVLTree {
     /**
      *  Method isBST 
      *
-     *  The method determines if a supplied tree node meets the requirements of
+     *  The method determines if a supplied tree node meets the requirements
      *  of a Binary Search Tree (BST)
      *
      *  Return true for meeting BST requirements, else false
@@ -301,7 +301,7 @@ class LUC_AVLTree {
      *
      *  This includes the following scenarios of where the node to delete is 
      *  in the tree:
-     *    1. leaf node - simpliest case, just return null (which removes node)
+     *    1. leaf node - simplest case, just return null (which removes node)
      *    2. interior node with only left subtree below it (node gets replaced 
      *       with left subtree)
      *    3. interior node with only right subtree below it (node gets replaced
@@ -358,13 +358,50 @@ class LUC_AVLTree {
          *      - RLRotation.
          *
          * To understand what each of these methods do, see the method prologues and
-         * code for each. You can also look at the method InsertElement, as it has do
-         * do many of the same things as this method.
+         * code for each. You can also look at the method InsertElement, as it has
+         * done many of the same things as this method.
          */
+
+        if (node == null) {
+            return null;
+        }
+
+        if (value < node.value) {
+            node.leftChild = deleteElement(value, node.leftChild);
+        } else if (value > node.value) {
+            node.rightChild = deleteElement(value, node.rightChild);
+        } else {
+            if (node.leftChild == null) {
+                return node.rightChild;
+            } else if (node.rightChild == null) {
+                return node.leftChild;
+            }
+
+            Node successor = minValueNode(node.rightChild);
+            node.value = successor.value;
+            node.rightChild = deleteElement(successor.value, node.rightChild);
+        }
+
+        // Method to Update the height
+        node.height = getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild)) + 1;
+
+        int bf = getBalanceFactor(node);
+
+        // 4 if conditions, two for leftChild and two for rightChild
+        if (bf > 1 && getBalanceFactor(node.leftChild) >= 0)
+            return LLRotation(node);
+
+        if (bf > 1 && getBalanceFactor(node.leftChild) < 0)
+            return LRRotation(node);
+
+        if (bf < -1 && getBalanceFactor(node.rightChild) <= 0)
+            return RRRotation(node);
+
+        if (bf < -1 && getBalanceFactor(node.rightChild) > 0)
+            return RLRotation(node);
 
         return node;
     }
-
 
     /**
      *  Method getBalance
